@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head> </head>
+  <head>
+    <title>{% block head_title %}Muypicky.com{% endblock head_title %}</title>
+    {% include 'snippets/css.html' %}
+  </head>
 
   <body>
-    <h1>Hello World!</h1>
-    <p>This is {{html_var}} coming through</p>
+    {% include 'snippets/nav.html' %}
+
+    <div class='container'>
+      {% block content %} Supper Dupper{% endblock content %}
+      {% include 'snippets/js.html' %}
+    <div>
   </body>
 </html>
