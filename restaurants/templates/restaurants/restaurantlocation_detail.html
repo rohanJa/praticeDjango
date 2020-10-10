@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block head_title %} 
+    Restaurants || {{block.super}} 
+{% endblock %}
+{% block content%}
+<!-- Context variable which is the dictionary
+    which is used to carry data for template 
+    will come under name "object" in the dictionary
+    by default in DetailView.
+-->
+    <h1> {{ object.name }} <small> {{object.category}} </small> </h1>
+    <p> {{ object.location }} </p>
+    <p>{{object.timestamp }}, Updated {{ object.updated|timesince }} ago</p>
+{% endblock %}
