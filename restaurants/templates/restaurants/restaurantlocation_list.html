@@ -12,7 +12,7 @@
             by default in ListView.
         -->
         {% for obj in object_list %}
-            <li>{{ obj.name }} <br>{{ obj.name }} {{ obj.location }} {{ obj.category }} {{ obj.timestamp }} {{ obj.updated }}</li>
+            <li><a href='/restaurants/{{obj.slug}}'>{{obj}}</a> <br>{{ obj.name }} {{ obj.location }} {{ obj.category }} {{ obj.timestamp }} {{ obj.updated }}</li>
         {% endfor %}
     </ul>
 
