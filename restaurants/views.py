@@ -1,12 +1,39 @@
+# importing 'decorators' for 'FBV' and 'Mixin' for 'CBV' in django
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from .models import RestaurantLocation
-from .forms import RestaurantCreateForm
+from .forms import RestaurantCreateForm, RestaurantLocationCreateForm
 # Create your views here.
 
+@login_required(login_url='/login/')
+def restaurant_createview(request):
+    form = RestaurantLocationCreateForm(request.POST or None)
+    errors = None
+    if form.is_valid():
+        if request.user.is_authenticated():
+            instance = form.save(commit=False)
+            instance.owner = request.user
+            instance.save()
+
+            return HttpResponseRedirect('/restaurants/')
+        else:
+            return HttpResponseRedirect("/login/")
+    if form.errors:
+        errors = form.errors
+    
+    template_name = 'restaurants/form.html'
+
+    context = {'form': form, 'errors': errors}
+    return render(request, template_name, context)
+
+'''
 def restaurant_createview(request):
     template_name = 'restaurants/form.html'
     form = RestaurantCreateForm(request.POST or None) #remove extra line if the request is POST for filling the form
@@ -26,6 +53,7 @@ def restaurant_createview(request):
 
     context = {"form": form, "errors": errors}
     return render(request, template_name, context)
+'''
 
 class RestaurantListView(ListView):
 
@@ -59,3 +87,16 @@ class RestaurantDetailView(DetailView):
     #     obj =get_object_or_404(RestaurantLocation, slug__icontains=rest_id) # pk = rest_id
     #     print(obj)
     #     return obj
+
+
+class RestaurantCreateView(LoginRequiredMixin, CreateView):
+    form_class = RestaurantLocationCreateForm
+    template_name = 'restaurants/form.html'
+    success_url = '/restaurants/'
+    login_url = '/login/'
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.owner = self.request.user
+
+        return super(RestaurantCreateView, self).form_valid(form)
